@@ -5,6 +5,7 @@ import { v4 } from "uuid";
 import Select from "react-select";
 import findIndex from "lodash.findindex";
 import "react-select/dist/react-select.css";
+import "./toast.css";
 
 export class Ticket extends Component {
   state = {
@@ -13,9 +14,10 @@ export class Ticket extends Component {
     status: ["pending", "resolved", "reopen"],
     active: "pending",
     selectedOption: "",
-    searchBy: "",
+    searchBy: { value: "id", label: "Id" },
     searchState: [],
-    search: false
+    search: false,
+    toast: ""
   };
 
   componentDidMount() {
@@ -42,20 +44,43 @@ export class Ticket extends Component {
       ? axios
           .patch("http://localhost:5050/ticket/", temp)
           .then(response => {
-            console.log(response);
+            this.setState(
+              {
+                toast: "Saved"
+              },
+              () => setTimeout(() => this.setState({ toast: "" }), 1000)
+            );
           })
           .catch(error => {
-            console.log(error);
+            debugger;
+            this.setState(
+              {
+                toast: "Not Saved Try Again"
+              },
+              () => setTimeout(() => this.setState({ toast: "" }), 1000)
+            );
           })
       : !!temp.issue_by &&
         !!temp.issue &&
         axios
           .post("http://localhost:5050/ticket/newticket/", temp)
           .then(response => {
-            console.log(response);
+            this.setState(
+              {
+                toast: "Saved",
+                newTicket: false
+              },
+              () => setTimeout(() => this.setState({ toast: "" }), 1000)
+            );
           })
           .catch(error => {
-            console.log(error);
+            debugger;
+            this.setState(
+              {
+                toast: "Not Saved Try Again"
+              },
+              () => setTimeout(() => this.setState({ toast: "" }), 1000)
+            );
           });
   };
 
@@ -75,7 +100,7 @@ export class Ticket extends Component {
 
   addNewTicket = () => {
     let temp = this.state.tickets[this.state.tickets.length - 1];
-    let newTicketId = temp.id;
+    let newTicketId = !temp ? 0 : temp.id;
     this.setState(prevState => ({
       newTicket: true,
       tickets: [
@@ -117,13 +142,20 @@ export class Ticket extends Component {
                 [status]: selectedOption.value
               },
               ...prevState.searchState.slice(++selectedIndexSearch)
-            ]
+            ],
+            toast: "Saved"
           }),
-          () => console.log(this.state, "State")
+          () => setTimeout(() => this.setState({ toast: "" }), 1000)
         );
       })
       .catch(error => {
-        console.log(error);
+        debugger;
+        this.setState(
+          {
+            toast: "Not Saved Try Again"
+          },
+          () => setTimeout(() => this.setState({ toast: "" }), 1000)
+        );
       });
   };
 
@@ -133,19 +165,29 @@ export class Ticket extends Component {
     axios
       .delete(`http://localhost:5050/ticket/delete/${id}`)
       .then(response => {
-        this.setState(prevState => ({
-          tickets: [
-            ...prevState.tickets.slice(0, selectedIndexTickets),
-            ...prevState.tickets.slice(++selectedIndexTickets)
-          ],
-          searchState: [
-            ...prevState.searchState.slice(0, selectedIndexSearch),
-            ...prevState.searchState.slice(++selectedIndexSearch)
-          ]
-        }));
+        this.setState(
+          prevState => ({
+            tickets: [
+              ...prevState.tickets.slice(0, selectedIndexTickets),
+              ...prevState.tickets.slice(++selectedIndexTickets)
+            ],
+            searchState: [
+              ...prevState.searchState.slice(0, selectedIndexSearch),
+              ...prevState.searchState.slice(++selectedIndexSearch)
+            ],
+            toast: "Deleted"
+          }),
+          () => setTimeout(() => this.setState({ toast: "" }), 1000)
+        );
       })
       .catch(error => {
-        console.log(error);
+        debugger;
+        this.setState(
+          {
+            toast: "Not Saved Try Again"
+          },
+          () => setTimeout(() => this.setState({ toast: "" }), 1000)
+        );
       });
   };
 
@@ -155,19 +197,20 @@ export class Ticket extends Component {
 
   handleSearchText = e => {
     let x = "" + e.target.value;
-    let regex = new RegExp(x, "g");
-    this.setState(prevState => {
-      return {
-        search: true,
-        searchState: prevState.tickets.filter(ticket =>
-          ("" + ticket.id).match(regex)
-        )
-      };
-    });
+    let regex = new RegExp(x, "gi");
+    this.setState(prevState => ({
+      search: true,
+      searchState: prevState.tickets.filter(ticket =>
+        ("" + ticket[prevState.searchBy.value]).match(regex)
+      )
+    }));
+  };
+
+  textInput = e => {
+    console.log(e, "eeeeeee");
   };
 
   render() {
-    console.log(this.state.searchState);
     const {
       tickets,
       newTicket,
@@ -189,37 +232,39 @@ export class Ticket extends Component {
     let searchOption = [
       { value: "id", label: "Id" },
       { value: "status", label: "Status" },
-      { value: "category", label: "Category" }
+      { value: "category", label: "Category" },
+      { value: "issue", label: "Issue" }
     ];
     return (
       <div>
-        <nav className="navbar navbar-light bg-light">
-          <div className="d-flex">
-            <Select
-              className="w-100"
-              name="status"
-              value={this.state.searchBy}
-              onChange={this.handleSearch}
-              options={searchOption}
-              clearable={false}
-              searchable={true}
-            />
-            <input
-              className="form-control mx-2"
-              type="search"
-              name="searchState"
-              placeholder="Search"
-              aria-label="Search"
-              onChange={this.handleSearchText}
-            />
-            <button
-              className="btn btn-outline-success mx-2 my-2 my-sm-0"
-              type="submit"
-            >
-              Search
-            </button>
+        <div id="snackbar" className={!!this.state.toast ? "show" : ""}>
+          {this.state.toast}
+        </div>
+        <div className="card my-2 mx-4">
+          <div className="d-flex card-body">
+            <div className="w-25">
+              <Select
+                className="mx-2"
+                name="status"
+                value={this.state.searchBy}
+                onChange={this.handleSearch}
+                options={searchOption}
+                clearable={false}
+                searchable={true}
+              />
+            </div>
+            <div>
+              <input
+                className="form-control mx-2"
+                type="search"
+                name="searchState"
+                placeholder="Search"
+                aria-label="Search"
+                onChange={this.handleSearchText}
+              />
+            </div>
           </div>
-        </nav>
+        </div>
 
         <div className="card my-2 mx-4">
           <button
@@ -235,6 +280,25 @@ export class Ticket extends Component {
           </button>
           {newTicket && (
             <div className="card-body mx-5 d-flex">
+              <Select
+                className="w-25"
+                name="status"
+                value={
+                  !tickets[tickets.length - 1].category
+                    ? ""
+                    : tickets[tickets.length - 1].category
+                }
+                onChange={this.handleChange.bind(
+                  this,
+                  !tickets[tickets.length - 1].id
+                    ? ""
+                    : tickets[tickets.length - 1].id,
+                  "category"
+                )}
+                options={allIssue}
+                clearable={false}
+                searchable={true}
+              />
               <input
                 type="text"
                 className="form-control mx-2"
@@ -264,85 +328,103 @@ export class Ticket extends Component {
             </div>
           )}
         </div>
-        <table className="table">
-          <thead>
-            <tr>
-              <th scope="col">ID</th>
-              <th scope="col">Created At</th>
-              <th scope="col">Update At</th>
-              <th scope="col">Issue</th>
-              <th scope="col">Customer Name</th>
-              <th scope="col" style={{ width: "12%" }}>
-                Category
-              </th>
-              <th scope="col" style={{ width: "12%" }}>
-                Status
-              </th>
-              <th scope="col">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!!tickets &&
-              (search ? searchState : tickets).map(
-                (
-                  {
-                    id,
-                    created_at,
-                    updated_at,
-                    issue,
-                    issue_by,
-                    status,
-                    category
-                  },
-                  index
-                ) => (
-                  <tr key={id}>
-                    <th scope="row">{id}</th>
-                    <td>{moment(created_at).format("LLL")}</td>
-                    <td>{moment(updated_at).format("LLL")}</td>
-                    <td>
-                      <input
-                        type="text"
-                        className="form-control"
-                        onChange={this.handleIssue}
-                        value={issue}
-                        name={id}
-                        onBlur={this.handleBlur}
-                      />
-                    </td>
-                    <td>{issue_by}</td>
-                    <td>
-                      <Select
-                        name="status"
-                        value={{ value: [id], label: category }}
-                        onChange={this.handleChange.bind(this, id, "category")}
-                        options={allIssue}
-                        clearable={false}
-                        searchable={true}
-                      />
-                    </td>
-                    <td>
-                      <Select
-                        name="category"
-                        value={{ value: [id], label: status }}
-                        onChange={this.handleChange.bind(this, id, "status")}
-                        options={allCategories}
-                        clearable={false}
-                      />
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-outline-dark"
-                        onClick={this.handleDelete.bind(this, id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
+        <div className="table-responsive card">
+          <div className="table-responsive card-body">
+            {!!tickets && !tickets.length ? (
+              <div className="text-center">
+                No Support Ticket. Want to Create New ?
+              </div>
+            ) : (
+              <table className="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col">Update At</th>
+                    <th scope="col">Issue</th>
+                    <th scope="col">Customer Name</th>
+                    <th scope="col" style={{ width: "12%" }}>
+                      Category
+                    </th>
+                    <th scope="col" style={{ width: "12%" }}>
+                      Status
+                    </th>
+                    <th scope="col">Actions</th>
                   </tr>
-                )
-              )}
-          </tbody>
-        </table>
+                </thead>
+                <tbody>
+                  {!!tickets &&
+                    (search ? searchState : tickets).map(
+                      (
+                        {
+                          id,
+                          created_at,
+                          updated_at,
+                          issue,
+                          issue_by,
+                          status,
+                          category
+                        },
+                        index
+                      ) => (
+                        <tr key={id}>
+                          <th scope="row">{id}</th>
+                          <td>{moment(created_at).format("LLL")}</td>
+                          <td>{moment(updated_at).format("LLL")}</td>
+                          <td>
+                            <input
+                              type="text"
+                              className="form-control"
+                              onChange={this.handleIssue}
+                              value={issue}
+                              name={id}
+                              onBlur={this.handleBlur}
+                            />
+                          </td>
+                          <td>{issue_by}</td>
+                          <td>
+                            <Select
+                              name="status"
+                              value={{ value: [id], label: category }}
+                              onChange={this.handleChange.bind(
+                                this,
+                                id,
+                                "category"
+                              )}
+                              options={allIssue}
+                              clearable={false}
+                              searchable={true}
+                            />
+                          </td>
+                          <td>
+                            <Select
+                              name="category"
+                              value={{ value: [id], label: status }}
+                              onChange={this.handleChange.bind(
+                                this,
+                                id,
+                                "status"
+                              )}
+                              options={allCategories}
+                              clearable={false}
+                            />
+                          </td>
+                          <td>
+                            <button
+                              className="btn btn-outline-dark"
+                              onClick={this.handleDelete.bind(this, id)}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    )}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
       </div>
     );
   }

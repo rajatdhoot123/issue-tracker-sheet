@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Ticket } from "./Ticket";
+import 'bootstrap/dist/css/bootstrap.css';
 
 const Index = () => {
   return (
     <div>
-      <span>Support Ticket App</span>
       <Ticket />
     </div>
   );
