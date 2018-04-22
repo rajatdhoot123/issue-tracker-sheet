@@ -233,7 +233,8 @@ export class Ticket extends Component {
       { value: "id", label: "Id" },
       { value: "status", label: "Status" },
       { value: "category", label: "Category" },
-      { value: "issue", label: "Issue" }
+      { value: "issue", label: "Issue" },
+      { value: "issue_by", label: "Customer Name" },
     ];
     return (
       <div>
