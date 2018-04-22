@@ -3,7 +3,7 @@ import axios from "axios";
 import moment from "moment";
 import { v4 } from "uuid";
 import Select from "react-select";
-import findIndex from 'lodash.findindex';
+import findIndex from "lodash.findindex";
 import "react-select/dist/react-select.css";
 
 export class Ticket extends Component {
@@ -12,7 +12,10 @@ export class Ticket extends Component {
     newTicket: false,
     status: ["pending", "resolved", "reopen"],
     active: "pending",
-    selectedOption: ""
+    selectedOption: "",
+    searchBy: "",
+    searchState: [],
+    search: false
   };
 
   componentDidMount() {
@@ -20,7 +23,8 @@ export class Ticket extends Component {
       .get("http://localhost:5050/ticket/")
       .then(response => {
         this.setState({
-          tickets: response.data.result
+          tickets: response.data.result,
+          searchState: response.data.result
         });
       })
       .catch(error => {
@@ -90,16 +94,29 @@ export class Ticket extends Component {
 
   handleChange = (id, status, selectedOption) => {
     let newStatus = { id: id, [status]: selectedOption.value };
+    let selectedIndexTickets = findIndex(this.state.tickets, { id: id });
+    let selectedIndexSearch = findIndex(this.state.searchState, { id: id });
+    debugger;
     axios
       .patch("http://localhost:5050/ticket", newStatus)
       .then(response => {
-        console.log(response, "response");
         this.setState(
           prevState => ({
             tickets: [
-              ...prevState.tickets.slice(0, id - 1),
-              { ...prevState.tickets[id - 1], [status]: selectedOption.value },
-              ...prevState.tickets.slice(id)
+              ...prevState.tickets.slice(0, selectedIndexTickets),
+              {
+                ...prevState.tickets[selectedIndexTickets],
+                [status]: selectedOption.value
+              },
+              ...prevState.tickets.slice(++selectedIndexTickets)
+            ],
+            searchState: [
+              ...prevState.searchState.slice(0, selectedIndexSearch),
+              {
+                ...prevState.searchState[selectedIndexSearch],
+                [status]: selectedOption.value
+              },
+              ...prevState.searchState.slice(++selectedIndexSearch)
             ]
           }),
           () => console.log(this.state, "State")
@@ -111,26 +128,54 @@ export class Ticket extends Component {
   };
 
   handleDelete = id => {
-    let selectedIndex = findIndex(this.state.tickets, { 'id': id })
+    let selectedIndexTickets = findIndex(this.state.tickets, { id: id });
+    let selectedIndexSearch = findIndex(this.state.searchState, { id: id });
     axios
       .delete(`http://localhost:5050/ticket/delete/${id}`)
       .then(response => {
-        this.setState(
-          prevState => ({
-            tickets: [
-              ...prevState.tickets.slice(0, selectedIndex),
-              ...prevState.tickets.slice(++selectedIndex)
-            ]
-          })
-        )
+        this.setState(prevState => ({
+          tickets: [
+            ...prevState.tickets.slice(0, selectedIndexTickets),
+            ...prevState.tickets.slice(++selectedIndexTickets)
+          ],
+          searchState: [
+            ...prevState.searchState.slice(0, selectedIndexSearch),
+            ...prevState.searchState.slice(++selectedIndexSearch)
+          ]
+        }));
       })
       .catch(error => {
         console.log(error);
       });
   };
 
+  handleSearch = selectedOption => {
+    this.setState({ searchBy: selectedOption });
+  };
+
+  handleSearchText = e => {
+    let x = "" + e.target.value;
+    let regex = new RegExp(x, "g");
+    this.setState(prevState => {
+      return {
+        search: true,
+        searchState: prevState.tickets.filter(ticket =>
+          ("" + ticket.id).match(regex)
+        )
+      };
+    });
+  };
+
   render() {
-    const { tickets, newTicket, status, selectedOption } = this.state;
+    console.log(this.state.searchState);
+    const {
+      tickets,
+      newTicket,
+      status,
+      selectedOption,
+      searchState,
+      search
+    } = this.state;
     let allCategories = [
       { value: "Pending", label: "Pending" },
       { value: "Resolved", label: "Resolved" },
@@ -141,8 +186,41 @@ export class Ticket extends Component {
       { value: "Food", label: "Food" },
       { value: "Cloths", label: "Cloths" }
     ];
+    let searchOption = [
+      { value: "id", label: "Id" },
+      { value: "status", label: "Status" },
+      { value: "category", label: "Category" }
+    ];
     return (
       <div>
+        <nav className="navbar navbar-light bg-light">
+          <div className="d-flex">
+            <Select
+              className="w-100"
+              name="status"
+              value={this.state.searchBy}
+              onChange={this.handleSearch}
+              options={searchOption}
+              clearable={false}
+              searchable={true}
+            />
+            <input
+              className="form-control mx-2"
+              type="search"
+              name="searchState"
+              placeholder="Search"
+              aria-label="Search"
+              onChange={this.handleSearchText}
+            />
+            <button
+              className="btn btn-outline-success mx-2 my-2 my-sm-0"
+              type="submit"
+            >
+              Search
+            </button>
+          </div>
+        </nav>
+
         <div className="card my-2 mx-4">
           <button
             className={
@@ -205,7 +283,7 @@ export class Ticket extends Component {
           </thead>
           <tbody>
             {!!tickets &&
-              tickets.map(
+              (search ? searchState : tickets).map(
                 (
                   {
                     id,
