@@ -87,19 +87,19 @@ export class Ticket extends Component {
     }));
   };
 
-  handleChange = (id, selectedOption) => {
-    let newStatus = {id: id,status: selectedOption.value}
+  handleChange = (id, status, selectedOption) => {
+    let newStatus = { id: id, [status]: selectedOption.value };
     axios
       .patch("http://localhost:5050/ticket", newStatus)
       .then(response => {
-        console.log(response,"response")
+        console.log(response, "response");
         this.setState(prevState => ({
           tickets: [
             ...prevState.tickets.slice(0, id - 1),
-            { ...prevState.tickets[id - 1], status: selectedOption.value },
+            { ...prevState.tickets[id - 1], [status]: selectedOption.value },
             ...prevState.tickets.slice(id)
           ]
-        }));
+        }), () => console.log(this.state,"State"));
       })
       .catch(error => {
         console.log(error);
@@ -111,6 +111,11 @@ export class Ticket extends Component {
       { value: "Pending", label: "Pending" },
       { value: "Resolved", label: "Resolved" },
       { value: "Reopen", label: "Reopen" }
+    ];
+    let allIssue = [
+      { value: "General", label: "General" },
+      { value: "Food", label: "Food" },
+      { value: "Cloths", label: "Cloths" }
     ];
     return (
       <div>
@@ -160,8 +165,10 @@ export class Ticket extends Component {
               <th scope="col">Update At</th>
               <th scope="col">Issue</th>
               <th scope="col">Customer Name</th>
-              <th scope="col">Category</th>
-              <th scope="col" style={{ width: "15%" }}>
+              <th scope="col" style={{ width: "12%" }}>
+                Category
+              </th>
+              <th scope="col" style={{ width: "12%" }}>
                 Status
               </th>
             </tr>
@@ -183,8 +190,8 @@ export class Ticket extends Component {
                 ) => (
                   <tr key={id}>
                     <th scope="row">{id}</th>
-                    <td>{moment(created_at).format("LLLL")}</td>
-                    <td>{moment(updated_at).format("LLLL")}</td>
+                    <td>{moment(created_at).format("LLL")}</td>
+                    <td>{moment(updated_at).format("LLL")}</td>
                     <td>
                       <input
                         type="text"
@@ -196,12 +203,21 @@ export class Ticket extends Component {
                       />
                     </td>
                     <td>{issue_by}</td>
-                    <td>{category}</td>
                     <td>
                       <Select
-                        name="form-field-name"
+                        name="status"
+                        value={{ value: [id], label: tickets[id - 1].category }}
+                        onChange={this.handleChange.bind(this, id, "category")}
+                        options={allIssue}
+                        clearable={false}
+                        searchable={true}
+                      />
+                    </td>
+                    <td>
+                      <Select
+                        name="category"
                         value={{ value: [id], label: tickets[id - 1].status }}
-                        onChange={this.handleChange.bind(this, id)}
+                        onChange={this.handleChange.bind(this, id, "status")}
                         options={allCategories}
                         clearable={false}
                       />
