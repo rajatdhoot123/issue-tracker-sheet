@@ -3,6 +3,7 @@ import axios from "axios";
 import moment from "moment";
 import { v4 } from "uuid";
 import Select from "react-select";
+import findIndex from 'lodash.findindex';
 import "react-select/dist/react-select.css";
 
 export class Ticket extends Component {
@@ -93,18 +94,41 @@ export class Ticket extends Component {
       .patch("http://localhost:5050/ticket", newStatus)
       .then(response => {
         console.log(response, "response");
-        this.setState(prevState => ({
-          tickets: [
-            ...prevState.tickets.slice(0, id - 1),
-            { ...prevState.tickets[id - 1], [status]: selectedOption.value },
-            ...prevState.tickets.slice(id)
-          ]
-        }), () => console.log(this.state,"State"));
+        this.setState(
+          prevState => ({
+            tickets: [
+              ...prevState.tickets.slice(0, id - 1),
+              { ...prevState.tickets[id - 1], [status]: selectedOption.value },
+              ...prevState.tickets.slice(id)
+            ]
+          }),
+          () => console.log(this.state, "State")
+        );
       })
       .catch(error => {
         console.log(error);
       });
   };
+
+  handleDelete = id => {
+    let selectedIndex = findIndex(this.state.tickets, { 'id': id })
+    axios
+      .delete(`http://localhost:5050/ticket/delete/${id}`)
+      .then(response => {
+        this.setState(
+          prevState => ({
+            tickets: [
+              ...prevState.tickets.slice(0, selectedIndex),
+              ...prevState.tickets.slice(++selectedIndex)
+            ]
+          })
+        )
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   render() {
     const { tickets, newTicket, status, selectedOption } = this.state;
     let allCategories = [
@@ -121,8 +145,13 @@ export class Ticket extends Component {
       <div>
         <div className="card my-2 mx-4">
           <button
-            className="btn btn-outline-primary mx-5 my-2"
+            className={
+              newTicket
+                ? "btn btn-outline-secondary mx-5 my-2"
+                : "btn btn-outline-primary mx-5 my-2"
+            }
             onClick={this.addNewTicket}
+            disabled={newTicket}
           >
             Add New Ticket
           </button>
@@ -171,6 +200,7 @@ export class Ticket extends Component {
               <th scope="col" style={{ width: "12%" }}>
                 Status
               </th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -206,7 +236,7 @@ export class Ticket extends Component {
                     <td>
                       <Select
                         name="status"
-                        value={{ value: [id], label: tickets[id - 1].category }}
+                        value={{ value: [id], label: category }}
                         onChange={this.handleChange.bind(this, id, "category")}
                         options={allIssue}
                         clearable={false}
@@ -216,11 +246,19 @@ export class Ticket extends Component {
                     <td>
                       <Select
                         name="category"
-                        value={{ value: [id], label: tickets[id - 1].status }}
+                        value={{ value: [id], label: status }}
                         onChange={this.handleChange.bind(this, id, "status")}
                         options={allCategories}
                         clearable={false}
                       />
+                    </td>
+                    <td>
+                      <button
+                        className="btn btn-outline-dark"
+                        onClick={this.handleDelete.bind(this, id)}
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 )
