@@ -247,8 +247,8 @@ export class Ticket extends Component {
     ];
     return (
       <div>
-        <div class="jumbotron">
-          <h3 class="display-4 text-center">Support Ticket Generator</h3>
+        <div className="jumbotron">
+          <h3 className="display-4 text-center">Support Ticket Generator</h3>
         </div>
         <div id="snackbar" className={!!this.state.toast ? "show" : ""}>
           {this.state.toast}

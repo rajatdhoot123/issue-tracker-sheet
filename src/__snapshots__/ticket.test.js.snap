@@ -3,6 +3,15 @@
 exports[`Test ticket component 1`] = `
 <div>
   <div
+    className="jumbotron"
+  >
+    <h3
+      className="display-4 text-center"
+    >
+      Support Ticket Generator
+    </h3>
+  </div>
+  <div
     className=""
     id="snackbar"
   >
@@ -12,7 +21,7 @@ exports[`Test ticket component 1`] = `
     className="card my-2 mx-4"
   >
     <div
-      className="d-flex card-body"
+      className="d-flex card-body justify-content-center"
     >
       <div
         className="w-25"
@@ -38,7 +47,7 @@ exports[`Test ticket component 1`] = `
           >
             <span
               className="Select-multi-value-wrapper"
-              id="react-select-2--value"
+              id="react-select-3--value"
             >
               <div
                 className="Select-value"
@@ -48,7 +57,7 @@ exports[`Test ticket component 1`] = `
                 <span
                   aria-selected="true"
                   className="Select-value-label"
-                  id="react-select-2--value-item"
+                  id="react-select-3--value-item"
                   role="option"
                 >
                   Id
@@ -63,7 +72,7 @@ exports[`Test ticket component 1`] = `
                 }
               >
                 <input
-                  aria-activedescendant="react-select-2--value"
+                  aria-activedescendant="react-select-3--value"
                   aria-describedby={undefined}
                   aria-expanded="false"
                   aria-haspopup="false"
@@ -120,422 +129,7 @@ exports[`Test ticket component 1`] = `
           aria-label="Search"
           className="form-control mx-2"
           name="searchState"
-          onChange={[Function]}
-          placeholder="Search"
-          type="search"
-        />
-      </div>
-    </div>
-  </div>
-  <div
-    className="card my-2 mx-4"
-  >
-    <button
-      className="btn btn-outline-primary mx-5 my-2"
-      disabled={false}
-      onClick={[Function]}
-    >
-      Add New Ticket
-    </button>
-  </div>
-  <div
-    className="table-responsive card"
-  >
-    <div
-      className="table-responsive card-body"
-    >
-      <table
-        className="table table-striped"
-      >
-        <thead>
-          <tr>
-            <th
-              scope="col"
-            >
-              ID
-            </th>
-            <th
-              scope="col"
-            >
-              Created At
-            </th>
-            <th
-              scope="col"
-            >
-              Update At
-            </th>
-            <th
-              scope="col"
-            >
-              Issue
-            </th>
-            <th
-              scope="col"
-            >
-              Customer Name
-            </th>
-            <th
-              scope="col"
-              style={
-                Object {
-                  "width": "12%",
-                }
-              }
-            >
-              Category
-            </th>
-            <th
-              scope="col"
-              style={
-                Object {
-                  "width": "12%",
-                }
-              }
-            >
-              Status
-            </th>
-            <th
-              scope="col"
-            >
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody />
-      </table>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Test ticket component 2`] = `
-<div>
-  <div
-    className=""
-    id="snackbar"
-  >
-    
-  </div>
-  <div
-    className="card my-2 mx-4"
-  >
-    <div
-      className="d-flex card-body"
-    >
-      <div
-        className="w-25"
-      >
-        <div
-          className="Select mx-2 has-value is-searchable Select--single"
-          style={undefined}
-        >
-          <input
-            disabled={false}
-            name="status"
-            type="hidden"
-            value="id"
-          />
-          <div
-            className="Select-control"
-            onKeyDown={[Function]}
-            onMouseDown={[Function]}
-            onTouchEnd={[Function]}
-            onTouchMove={[Function]}
-            onTouchStart={[Function]}
-            style={undefined}
-          >
-            <span
-              className="Select-multi-value-wrapper"
-              id="react-select-2--value"
-            >
-              <div
-                className="Select-value"
-                style={undefined}
-                title={undefined}
-              >
-                <span
-                  aria-selected="true"
-                  className="Select-value-label"
-                  id="react-select-2--value-item"
-                  role="option"
-                >
-                  Id
-                </span>
-              </div>
-              <div
-                className="Select-input"
-                style={
-                  Object {
-                    "display": "inline-block",
-                  }
-                }
-              >
-                <input
-                  aria-activedescendant="react-select-2--value"
-                  aria-describedby={undefined}
-                  aria-expanded="false"
-                  aria-haspopup="false"
-                  aria-label={undefined}
-                  aria-labelledby={undefined}
-                  aria-owns=""
-                  className={undefined}
-                  id={undefined}
-                  onBlur={[Function]}
-                  onChange={[Function]}
-                  onFocus={[Function]}
-                  required={false}
-                  role="combobox"
-                  style={
-                    Object {
-                      "boxSizing": "content-box",
-                      "width": "5px",
-                    }
-                  }
-                  tabIndex={undefined}
-                  value=""
-                />
-                <div
-                  style={
-                    Object {
-                      "height": 0,
-                      "left": 0,
-                      "overflow": "scroll",
-                      "position": "absolute",
-                      "top": 0,
-                      "visibility": "hidden",
-                      "whiteSpace": "pre",
-                    }
-                  }
-                >
-                  
-                </div>
-              </div>
-            </span>
-            <span
-              className="Select-arrow-zone"
-              onMouseDown={[Function]}
-            >
-              <span
-                className="Select-arrow"
-                onMouseDown={[Function]}
-              />
-            </span>
-          </div>
-        </div>
-      </div>
-      <div>
-        <input
-          aria-label="Search"
-          className="form-control mx-2"
-          name="searchState"
-          onChange={[Function]}
-          placeholder="Search"
-          type="search"
-        />
-      </div>
-    </div>
-  </div>
-  <div
-    className="card my-2 mx-4"
-  >
-    <button
-      className="btn btn-outline-primary mx-5 my-2"
-      disabled={false}
-      onClick={[Function]}
-    >
-      Add New Ticket
-    </button>
-  </div>
-  <div
-    className="table-responsive card"
-  >
-    <div
-      className="table-responsive card-body"
-    >
-      <table
-        className="table table-striped"
-      >
-        <thead>
-          <tr>
-            <th
-              scope="col"
-            >
-              ID
-            </th>
-            <th
-              scope="col"
-            >
-              Created At
-            </th>
-            <th
-              scope="col"
-            >
-              Update At
-            </th>
-            <th
-              scope="col"
-            >
-              Issue
-            </th>
-            <th
-              scope="col"
-            >
-              Customer Name
-            </th>
-            <th
-              scope="col"
-              style={
-                Object {
-                  "width": "12%",
-                }
-              }
-            >
-              Category
-            </th>
-            <th
-              scope="col"
-              style={
-                Object {
-                  "width": "12%",
-                }
-              }
-            >
-              Status
-            </th>
-            <th
-              scope="col"
-            >
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody />
-      </table>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`Test ticket component 3`] = `
-<div>
-  <div
-    className=""
-    id="snackbar"
-  >
-    
-  </div>
-  <div
-    className="card my-2 mx-4"
-  >
-    <div
-      className="d-flex card-body"
-    >
-      <div
-        className="w-25"
-      >
-        <div
-          className="Select mx-2 has-value is-searchable Select--single"
-          style={undefined}
-        >
-          <input
-            disabled={false}
-            name="status"
-            type="hidden"
-            value="id"
-          />
-          <div
-            className="Select-control"
-            onKeyDown={[Function]}
-            onMouseDown={[Function]}
-            onTouchEnd={[Function]}
-            onTouchMove={[Function]}
-            onTouchStart={[Function]}
-            style={undefined}
-          >
-            <span
-              className="Select-multi-value-wrapper"
-              id="react-select-2--value"
-            >
-              <div
-                className="Select-value"
-                style={undefined}
-                title={undefined}
-              >
-                <span
-                  aria-selected="true"
-                  className="Select-value-label"
-                  id="react-select-2--value-item"
-                  role="option"
-                >
-                  Id
-                </span>
-              </div>
-              <div
-                className="Select-input"
-                style={
-                  Object {
-                    "display": "inline-block",
-                  }
-                }
-              >
-                <input
-                  aria-activedescendant="react-select-2--value"
-                  aria-describedby={undefined}
-                  aria-expanded="false"
-                  aria-haspopup="false"
-                  aria-label={undefined}
-                  aria-labelledby={undefined}
-                  aria-owns=""
-                  className={undefined}
-                  id={undefined}
-                  onBlur={[Function]}
-                  onChange={[Function]}
-                  onFocus={[Function]}
-                  required={false}
-                  role="combobox"
-                  style={
-                    Object {
-                      "boxSizing": "content-box",
-                      "width": "5px",
-                    }
-                  }
-                  tabIndex={undefined}
-                  value=""
-                />
-                <div
-                  style={
-                    Object {
-                      "height": 0,
-                      "left": 0,
-                      "overflow": "scroll",
-                      "position": "absolute",
-                      "top": 0,
-                      "visibility": "hidden",
-                      "whiteSpace": "pre",
-                    }
-                  }
-                >
-                  
-                </div>
-              </div>
-            </span>
-            <span
-              className="Select-arrow-zone"
-              onMouseDown={[Function]}
-            >
-              <span
-                className="Select-arrow"
-                onMouseDown={[Function]}
-              />
-            </span>
-          </div>
-        </div>
-      </div>
-      <div>
-        <input
-          aria-label="Search"
-          className="form-control mx-2"
-          name="searchState"
+          onBlur={[Function]}
           onChange={[Function]}
           placeholder="Search"
           type="search"
