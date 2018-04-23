@@ -35,53 +35,57 @@ export class Ticket extends Component {
   }
 
   handleBlur = e => {
-    let isNewTicket = e.target.name == "issue" || e.target.name == "issue_by";
-    let temp = isNewTicket
-      ? this.state.tickets[this.state.tickets.length - 1]
-      : this.state.tickets.find(ticket => ticket.id == e.target.name);
-    temp.created_at = moment(temp.created_at).format("YYYY-MM-DD HH:mm:ss");
-    !isNewTicket
-      ? axios
-          .patch("http://localhost:5050/ticket/", temp)
-          .then(response => {
-            this.setState(
-              {
-                toast: "Saved"
-              },
-              () => setTimeout(() => this.setState({ toast: "" }), 1000)
-            );
-          })
-          .catch(error => {
-            debugger;
-            this.setState(
-              {
-                toast: "Not Saved Try Again"
-              },
-              () => setTimeout(() => this.setState({ toast: "" }), 1000)
-            );
-          })
-      : !!temp.issue_by &&
-        !!temp.issue &&
-        axios
-          .post("http://localhost:5050/ticket/newticket/", temp)
-          .then(response => {
-            this.setState(
-              {
-                toast: "Saved",
-                newTicket: false
-              },
-              () => setTimeout(() => this.setState({ toast: "" }), 1000)
-            );
-          })
-          .catch(error => {
-            debugger;
-            this.setState(
-              {
-                toast: "Not Saved Try Again"
-              },
-              () => setTimeout(() => this.setState({ toast: "" }), 1000)
-            );
-          });
+    if (e.target.name == "searchState") {
+      this.setState({
+        search: false
+      });
+    } else {
+      let isNewTicket = e.target.name == "issue" || e.target.name == "issue_by";
+      let temp = isNewTicket
+        ? this.state.tickets[this.state.tickets.length - 1]
+        : this.state.tickets.find(ticket => ticket.id == e.target.name);
+      temp.created_at = moment(temp.created_at).format("YYYY-MM-DD HH:mm:ss");
+      !isNewTicket
+        ? axios
+            .patch("http://localhost:5050/ticket/", temp)
+            .then(response => {
+              this.setState(
+                {
+                  toast: "Saved"
+                },
+                () => setTimeout(() => this.setState({ toast: "" }), 1000)
+              );
+            })
+            .catch(error => {
+              this.setState(
+                {
+                  toast: "Not Saved Try Again"
+                },
+                () => setTimeout(() => this.setState({ toast: "" }), 1000)
+              );
+            })
+        : !!temp.issue_by &&
+          !!temp.issue &&
+          axios
+            .post("http://localhost:5050/ticket/newticket/", temp)
+            .then(response => {
+              this.setState(
+                {
+                  toast: "Saved",
+                  newTicket: false
+                },
+                () => setTimeout(() => this.setState({ toast: "" }), 1000)
+              );
+            })
+            .catch(error => {
+              this.setState(
+                {
+                  toast: "Not Saved Try Again"
+                },
+                () => setTimeout(() => this.setState({ toast: "" }), 1000)
+              );
+            });
+    }
   };
 
   handleIssue = e => {
@@ -113,6 +117,17 @@ export class Ticket extends Component {
             status: "Pending"
           }
         ]
+      ],
+      searchState: [
+        ...prevState.tickets,
+        ...[
+          {
+            id: ++newTicketId,
+            created_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+            updated_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+            status: "Pending"
+          }
+        ]
       ]
     }));
   };
@@ -121,7 +136,7 @@ export class Ticket extends Component {
     let newStatus = { id: id, [status]: selectedOption.value };
     let selectedIndexTickets = findIndex(this.state.tickets, { id: id });
     let selectedIndexSearch = findIndex(this.state.searchState, { id: id });
-    debugger;
+
     axios
       .patch("http://localhost:5050/ticket", newStatus)
       .then(response => {
@@ -149,7 +164,6 @@ export class Ticket extends Component {
         );
       })
       .catch(error => {
-        debugger;
         this.setState(
           {
             toast: "Not Saved Try Again"
@@ -181,7 +195,6 @@ export class Ticket extends Component {
         );
       })
       .catch(error => {
-        debugger;
         this.setState(
           {
             toast: "Not Saved Try Again"
@@ -204,10 +217,6 @@ export class Ticket extends Component {
         ("" + ticket[prevState.searchBy.value]).match(regex)
       )
     }));
-  };
-
-  textInput = e => {
-    console.log(e, "eeeeeee");
   };
 
   render() {
@@ -234,15 +243,18 @@ export class Ticket extends Component {
       { value: "status", label: "Status" },
       { value: "category", label: "Category" },
       { value: "issue", label: "Issue" },
-      { value: "issue_by", label: "Customer Name" },
+      { value: "issue_by", label: "Customer Name" }
     ];
     return (
       <div>
+        <div class="jumbotron">
+          <h3 class="display-4 text-center">Support Ticket Generator</h3>
+        </div>
         <div id="snackbar" className={!!this.state.toast ? "show" : ""}>
           {this.state.toast}
         </div>
         <div className="card my-2 mx-4">
-          <div className="d-flex card-body">
+          <div className="d-flex card-body justify-content-center">
             <div className="w-25">
               <Select
                 className="mx-2"
@@ -262,6 +274,7 @@ export class Ticket extends Component {
                 placeholder="Search"
                 aria-label="Search"
                 onChange={this.handleSearchText}
+                onBlur={this.handleBlur}
               />
             </div>
           </div>
